@@ -30,83 +30,99 @@
 
 import QtQuick 2.0
 import Sailfish.Silica 1.0
-import "../js/habits.js"  as Habits
+import "../js/habits.js" as Habits
 
 
 Page {
     id: page
 
-    // To enable PullDownMenu, place our content in a SilicaFlickable
+    ListModel {
+       id: habitsModel
+    }
+
     SilicaFlickable {
         anchors.fill: parent
-
-        // PullDownMenu and PushUpMenu must be declared in SilicaFlickable, SilicaListView or SilicaGridView
-        PullDownMenu {
-            MenuItem {
-                text: qsTr("Dailies")
-                onClicked: pageStack.push(Qt.resolvedUrl("Dailies.qml"))
-            }
+    Column {
+        id: taskTypePanel
+        width: page.isPortrait ? parent.width : Theme.itemSizeExtraLarge + Theme.paddingLarge
+        height: page.isPortrait ? Theme.itemSizeExtraLarge + Theme.paddingLarge : parent.height
+        anchors {
+            top: parent.top
         }
 
-        // Tell SilicaFlickable the height of its content.
-        contentHeight: column.height
+        Flow {
+            anchors.centerIn: parent
 
-        SilicaListView {
-            id: habitsList
-            anchors.fill: parent
-            model: habitsModel
-
-            header: PageHeader {
-                title: qsTr("Habits")
+            TextSwitch {
+                text: 'Habits'
             }
-
-            VerticalScrollDecorator {}
-
-            Component.onCompleted: {
-                var foundSearchEngines = Habits.readAll();
-                for (var i = 0; i < foundSearchEngines.length; i++) {
-                    habitsModel.append(foundSearchEngines[i])
-                }
+            TextSwitch {
+                text: 'Dailies'
             }
-
-            delegate: ListItem {
-                id: habitsListItem
-
-                menu: ContextMenu {
-                    MenuItem {
-                        text: qsTr("-")
-                        onClicked: {
-                        }
-                    }
-                    MenuItem {
-                        text: qsTr("+")
-                        onClicked: {
-                        }
-                    }
-                }
-                Label {
-                    x: Theme.horizontalPageMargin
-                    id: nameLabel
-                    text: name
-                    font.pixelSize: Theme.fontSizeMedium
-                    truncationMode: TruncationMode.Fade
-                    width: parent.width - 2*Theme.horizontalPageMargin
-                    maximumLineCount: 1
-                }
-                Label {
-                    x: Theme.horizontalPageMargin
-                    anchors {
-                        top: nameLabel.bottom
-                    }
-                    font.pixelSize: Theme.fontSizeExtraSmall
-                    truncationMode: TruncationMode.Fade
-                    width: parent.width - 2*Theme.horizontalPageMargin
-                    maximumLineCount: 1
-                    text: url
-                }
+            TextSwitch {
+                text: 'Todos'
             }
         }
     }
+
+    SilicaListView {
+        id: habitsList
+
+        model: habitsModel
+        anchors {
+            top: taskTypePanel.bottom
+            bottom: parent.bottom
+        }
+
+        VerticalScrollDecorator {}
+
+        Component.onCompleted: {
+            Habits.query('', '').habits(function (habit) {
+                habit.subject = habit.text;
+                habit.downdown = habit.down;
+                habitsModel.append(habit);
+            });
+        }
+
+        delegate: ListItem {
+            id: habitsItem
+
+            menu: ContextMenu {
+                MenuItem {
+                    text: qsTr('+')
+                    onClicked: {
+                    }
+                    visible: up
+                }
+                MenuItem {
+                    text: qsTr('-')
+                    onClicked: {
+                    }
+                    visible: downdown
+                }
+                MenuItem {
+                    text: qsTr('Edit')
+                    onClicked: {
+                    }
+                }
+                MenuItem {
+                    text: qsTr('Delete')
+                    onClicked: {
+                    }
+                }
+            }
+            Label {
+                x: Theme.horizontalPageMargin
+                id: subjectLabel
+                text: subject
+                font.pixelSize: Theme.fontSizeMedium
+                truncationMode: TruncationMode.Fade
+                width: parent.width - 2*Theme.horizontalPageMargin
+                maximumLineCount: 1
+            }
+        }
+    }
+}
 }
 
 
