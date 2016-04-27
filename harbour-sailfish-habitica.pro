@@ -39,6 +39,7 @@ DISTFILES += \
     qml/pages/Habits.qml \
     qml/pages/Dailies.qml \
     qml/pages/Todos.qml \
+    qml/pages/Me.qml \
     qml/js/habits.js \
     harbour-sailfish-habitica.desktop
 

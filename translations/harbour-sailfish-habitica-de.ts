@@ -11,12 +11,12 @@
 <context>
     <name>Dailies</name>
     <message>
-        <source>Nested Page</source>
-        <translation type="unfinished">Unterseite</translation>
+        <source>Edit</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Item</source>
-        <translation type="unfinished">Element</translation>
+        <source>Delete</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -29,6 +29,17 @@
         <source>+</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Edit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>Todos</name>
     <message>
         <source>Edit</source>
         <translation type="unfinished"></translation>

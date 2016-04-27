@@ -8,20 +8,16 @@ Page {
     id: page
 
     ListModel {
-       id: habitsModel
+       id: userModel
     }
 
     SilicaListView {
         id: habitsList
-        model: habitsModel
+        model: userModel
 
         anchors.fill: parent
 
         PullDownMenu {
-            MenuItem {
-                text: 'Me'
-                onClicked: pageStack.replace(Qt.resolvedUrl('Me.qml'))
-            }
             MenuItem {
                 text: 'Habits'
                 onClicked: pageStack.replace(Qt.resolvedUrl('Habits.qml'))
@@ -30,33 +26,23 @@ Page {
                 text: 'Dailies'
                 onClicked: pageStack.replace(Qt.resolvedUrl('Dailies.qml'))
             }
+            MenuItem {
+                text: 'Todos'
+                onClicked: pageStack.replace(Qt.resolvedUrl('Todos.qml'))
+            }
         }
 
         VerticalScrollDecorator {}
 
         Component.onCompleted: {
-            Habits.query('', '').todos().notCompleted().fetch(function (habit) {
-                habit.subject = habit.text;
-                habit.downdown = habit.down;
-                habitsModel.append(habit);
+            Habits.query('', '').user().fetch(function (user) {
+                userModel.append(user);
             });
         }
 
-        delegate: ListItem {
-            id: habitsItem
+        delegate: Item {
+            id: userItem
 
-            menu: ContextMenu {
-                MenuItem {
-                    text: qsTr('Edit')
-                    onClicked: {
-                    }
-                }
-                MenuItem {
-                    text: qsTr('Delete')
-                    onClicked: {
-                    }
-                }
-            }
             Label {
                 x: Theme.horizontalPageMargin
                 id: subjectLabel

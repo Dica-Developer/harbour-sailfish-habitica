@@ -22,13 +22,16 @@
 function query(apiUser, apiKey) {
     var _apiUser = apiUser;
     var _apiKey = apiKey;
-    var _tasks = [];
+    var _result = [];
+    var _type = null;
+    var _completed = null;
+    var _method = '/user/tasks'
 
     function query(errorHandler, endHandler) {
         errorHandler = errorHandler || null;
         endHandler = endHandler || null;
         var request = new XMLHttpRequest();
-        request.open('GET', 'https://habitica.com/api/v2/user/tasks', true);
+        request.open('GET', 'https://habitica.com/api/v2' + _method, true);
         request.setRequestHeader('x-api-user', apiUser);
         request.setRequestHeader('x-api-key', apiKey);
         request.setRequestHeader('Accept-Encoding', 'gzip, deflate')
@@ -37,7 +40,7 @@ function query(apiUser, apiKey) {
                 if (XMLHttpRequest.DONE === request.readyState) {
                     switch (request.status) {
                     case 200:
-                        _tasks = JSON.parse(request.responseText);
+                        _result = JSON.parse(request.responseText);
                         if (null !== endHandler) {
                             endHandler(false);
                         }
@@ -71,15 +74,47 @@ function query(apiUser, apiKey) {
         request.send();
     }
 
-    function habits(perHabitHandler, errorHandler, endHandler) {
+    function habits() {
+        _type = 'habit';
+        return {
+            fetch: fetchTasks
+        };
+    }
+
+    function dailies() {
+        _type = 'daily';
+        return {
+            notCompleted: notCompleted,
+            fetch: fetchTasks
+        };
+    }
+
+    function todos() {
+        _type = 'todo';
+        return {
+            notCompleted: notCompleted,
+            fetch: fetchTasks
+        };
+    }
+
+    function notCompleted() {
+        _completed = false;
+        return {
+            fetch: fetchTasks
+        };
+    }
+
+    function fetchTasks(perTaskHandler, errorHandler, endHandler) {
         errorHandler = errorHandler || null;
         endHandler = endHandler || null;
         query(errorHandler, function(error) {
             if (!error) {
-                for (var i = 0; i < _tasks.length; i++) {
-                    var task = _tasks[i];
-                    if ('habit' === task.type) {
-                        perHabitHandler(task);
+                for (var i = 0; i < _result.length; i++) {
+                    var task = _result[i];
+                    if (null === _type || _type === task.type) {
+                        if (null === _completed || _completed === task.completed) {
+                            perTaskHandler(task);
+                        }
                     }
                 }
             }
@@ -89,35 +124,19 @@ function query(apiUser, apiKey) {
         });
     }
 
-    function dailies(perDailyHandler, errorHandler, endHandler) {
-        errorHandler = errorHandler || null;
-        endHandler = endHandler || null;
-        query(errorHandler, function(error) {
-            if (!error) {
-                for (var i = 0; i < _tasks.length; i++) {
-                    var task = _tasks[i];
-                    if ('daily' === task.type) {
-                        perDailyHandler(task);
-                    }
-                }
-            }
-            if (null !== endHandler) {
-                endHandler(error);
-            }
-        });
+    function user() {
+        _method = '/user'
+        return {
+            fetch: fetchUser
+        }
     }
 
-    function todos(perTodoHandler, errorHandler, endHandler) {
+    function fetchUser(successHandler, errorHandler, endHandler) {
         errorHandler = errorHandler || null;
         endHandler = endHandler || null;
         query(errorHandler, function(error) {
             if (!error) {
-                for (var i = 0; i < _tasks.length; i++) {
-                    var task = _tasks[i];
-                    if ('todo' === task.type) {
-                        perTodoHandler(task);
-                    }
-                }
+                successHandler(_user);
             }
             if (null !== endHandler) {
                 endHandler(error);
