@@ -16,7 +16,7 @@ CONFIG += sailfishapp
 
 SOURCES += src/harbour-sailfish-habitica.cpp
 
-OTHER_FILES += qml/rbour-sailfish-habitica.qml \
+OTHER_FILES += qml/harbour-sailfish-habitica.qml \
     qml/cover/CoverPage.qml \
     rpm/harbour-sailfish-habitica.changes.in \
     rpm/harbour-sailfish-habitica.spec \
